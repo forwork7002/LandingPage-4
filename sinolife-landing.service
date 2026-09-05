@@ -1,0 +1,13 @@
+[Unit]
+Description=Sinolife Collagen landing
+After=network.target
+
+[Service]
+ExecStart=/bin/bash /root/sinolife-landing/start.sh
+WorkingDirectory=/root/sinolife-landing
+Restart=always
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target
