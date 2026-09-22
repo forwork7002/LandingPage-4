@@ -18,7 +18,7 @@ export BITRIX_DEAL_STAGE_NAME="Веб-сайт"
 # export BITRIX_DEAL_STAGE_ID="C7:NEW"
 
 export BITRIX_SOURCE_ID="WEB"
-export BITRIX_DEAL_TITLE="Sayt Collagen — {name}"
+export BITRIX_DEAL_TITLE="Сайт Collagen — {name}"
 export ADMIN_KEY="ozgartiring-bu-kalitni"
 
 # Ixtiyoriy:

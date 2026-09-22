@@ -13,7 +13,7 @@
  * MUHIT O'ZGARUVCHILARI (start.sh ichida):
  *   PORT                        port (standart 3000)
  *   BITRIX_WEBHOOK              MAJBURIY. Masalan:
- *                               https://obey.bitrix24.kz/rest/1/xxxxxxxxxxxx/
+ *                               https://obey.bitrix24.kz/rest/1/XXXXXXXXXXXXXXXX/
  *   BITRIX_DEAL_CATEGORY_NAME   voronka nomi (standart "Регистрация")
  *   BITRIX_DEAL_STAGE_NAME      bosqich nomi (standart "Веб-сайт")
  *   BITRIX_DEAL_CATEGORY_ID     nom bo'yicha topilmasa — ID ni qo'lda yozing
@@ -43,7 +43,7 @@ const STAGE_ID_ENV = (process.env.BITRIX_DEAL_STAGE_ID || '').trim();
 
 const SOURCE_ID = process.env.BITRIX_SOURCE_ID || 'WEB';
 const ASSIGNED_BY = (process.env.BITRIX_ASSIGNED_BY || '').trim();
-const TITLE_TPL = process.env.BITRIX_DEAL_TITLE || 'Sayt Collagen — {name}';
+const TITLE_TPL = process.env.BITRIX_DEAL_TITLE || 'Сайт Collagen — {name}';
 const AMOUNT = (process.env.BITRIX_DEAL_AMOUNT || '').trim();
 const CREATE_CONTACT = process.env.BITRIX_CREATE_CONTACT !== '0';
 const ADMIN_KEY = (process.env.ADMIN_KEY || '').trim();
