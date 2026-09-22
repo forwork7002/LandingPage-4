@@ -1,0 +1,67 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# gh-pages branchiga yozish uchun shu yetarli. Pages API (configure-pages)
+# ishlatilmaydi — GITHUB_TOKEN ga Pages sayti yaratish huquqi berilmagan,
+# shuning uchun sayt "Deploy from a branch: gh-pages" rejimida turadi.
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Saytga faqat public/ chiqadi: server.js, start.sh va service fayli
+      # repoda qoladi, lekin Pages'da ochilmaydi.
+      - name: Sayt papkasini tayyorlash
+        run: |
+          rm -rf _site
+          cp -r public _site
+          touch _site/.nojekyll
+
+      # og:image / og:url absolyut boʻlishi shart (Facebook, Telegram preview
+      # uchun), lekin ular repo nomiga bogʻliq. Shuning uchun deploy paytida
+      # haqiqiy manzil bilan almashtiriladi va index.html oʻzgarmaydi.
+      # Custom domain ulasangiz — BASE_URL ni oʻsha domenga oʻzgartiring.
+      - name: og-teglarni sayt manziliga moslash
+        env:
+          BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        run: |
+          python3 - <<'PY'
+          import os, re, io
+          base = os.environ['BASE_URL'].rstrip('/') + '/'
+          p = '_site/index.html'
+          s = io.open(p, encoding='utf-8').read()
+          s, n1 = re.subn(r'(<meta property="og:image" content=")[^"]*(")',
+                          lambda m: m.group(1) + base + 'img/og.jpg' + m.group(2), s)
+          s, n2 = re.subn(r'(<meta property="og:url" content=")[^"]*(")',
+                          lambda m: m.group(1) + base + m.group(2), s)
+          io.open(p, 'w', encoding='utf-8').write(s)
+          print(f'base={base}  og:image={n1}  og:url={n2}')
+          if not (n1 and n2):
+              raise SystemExit('og teglari topilmadi — index.html oʻzgargan boʻlishi mumkin')
+          PY
+
+      - name: gh-pages branchini yangilash
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          cd _site
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -qm "Deploy ${GITHUB_SHA} (${GITHUB_RUN_NUMBER})"
+          git push -qf "https://x-access-token:${TOKEN}@github.com/${REPO}.git" gh-pages
+          echo "gh-pages yangilandi"
